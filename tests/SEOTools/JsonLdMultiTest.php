@@ -85,9 +85,21 @@ class JsonLdMultiTest extends BaseTest
 
         $this->jsonLdMulti->setDescription($description);
 
-        $expected = htmlspecialchars_decode('<html><head><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Over 9000 Thousand!","description":"\"Foo bar\" -&gt; abc"}</script></head></html>');
+        $expected = '<html><head><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Over 9000 Thousand!","description":"\u0022Foo bar\u0022 -\u003E abc"}</script></head></html>';
 
         $this->setRightAssertion($expected);
+    }
+
+    public function test_escapes_html_sensitive_characters_for_script_context()
+    {
+        $description = 'Safe text </script><script>alert("json-ld")</script> & \'quoted\'';
+
+        $this->jsonLdMulti->setDescription($description);
+
+        $html = $this->jsonLdMulti->generate();
+
+        $this->assertStringNotContainsString('</script><script>', $html);
+        $this->assertSame($description, $this->jsonLdPayload($html)['description']);
     }
 
     public function test_set_type()

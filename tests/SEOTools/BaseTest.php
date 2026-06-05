@@ -40,4 +40,11 @@ class BaseTest extends TestCase
 
         return $dom;
     }
+
+    protected function jsonLdPayload($html)
+    {
+        preg_match('/<script type="application\/ld\+json">(.*?)<\/script>/s', $html, $matches);
+
+        return json_decode($matches[1], true);
+    }
 }
