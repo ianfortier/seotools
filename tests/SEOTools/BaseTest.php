@@ -41,10 +41,11 @@ class BaseTest extends TestCase
         return $dom;
     }
 
-    protected function jsonLdPayload($html)
+    protected function jsonLdPayload(string $html): array
     {
-        preg_match('/<script type="application\/ld\+json">(.*?)<\/script>/s', $html, $matches);
+        $matched = preg_match('/<script type="application\/ld\+json">(.*?)<\/script>/s', $html, $matches);
+        $this->assertSame(1, $matched, 'Expected to find a JSON-LD <script type="application/ld+json"> tag');
 
-        return json_decode($matches[1], true);
+        return json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR);
     }
 }
